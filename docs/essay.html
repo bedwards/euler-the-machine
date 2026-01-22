@@ -30,8 +30,8 @@
         </div>
 
         <div class="reading-info">
-            <strong>Reading time:</strong> Approximately 60-75 minutes<br>
-            <strong>Word count:</strong> ~12,000 words
+            <strong>Reading time:</strong> Approximately 55-60 minutes<br>
+            <strong>Word count:</strong> ~11,300 words
         </div>
 
         <div class="video-container">
@@ -253,7 +253,127 @@
 
             <p>Total session time: 34 minutes and 27 seconds. Correct answer: never found.</p>
 
-            <h2>Part Four: Analysis</h2>
+            <h2>Part Four: Detailed Session Analysis</h2>
+
+            <p>The summary above captures the broad strokes of each session, but the actual logs contain far more detail that illuminates how each system actually reasons. In this section, I will share specific excerpts and observations that did not fit into the narrative above but contribute to understanding the differences between these systems.</p>
+
+            <h3>Inside Codex's Reasoning</h3>
+
+            <p>Codex's session log includes what OpenAI calls "agent reasoning" entries, explicit summaries of the system's current thinking at each step. These provide an unusually clear view into the problem-solving process. Here is how Codex's thinking evolved over the first several minutes:</p>
+
+            <p>At the three-minute mark, Codex was already developing a sophisticated mathematical framing: "Analyzing combinatorial growth of 3D amoeba divisions: The problem models amoeba divisions as growth of occupied cubes in 3D, replacing one cube with three in positive coordinate directions, incrementing the total cube count by two." This is precisely correct.</p>
+
+            <p>Seconds later came an insightful observation: "Identifying leaf sets as frontiers of embedded 3-ary trees in 3D lattice: The problem maps to counting distinct leaf sets of full ternary trees embedded in the 3D grid with edges along coordinate directions." This tree-based framing is mathematically valid and could have led to a solution. The question is why it did not.</p>
+
+            <p>By minute five, Codex was already trying to connect to known sequences: "Comparing sequence to known lattice animal counts: The sequence closely resembles counts for 3D directed lattice animals but differs starting from n equals 5; computing further terms may clarify if it matches an indexed sequence." The willingness to compare against known mathematical structures shows mathematical sophistication, but the comparison yielded no match.</p>
+
+            <p>The pivot to recurrence-finding happened around minute eight: "Analyzing sequence approach: The sequence for D(N) up to 10 is confirmed but doesn't match known directed animals or central trinomial numbers; the plan is to attempt a dynamic programming solution using a canonical 'frontier' state encoding or transfer-matrix method."</p>
+
+            <p>This pivot is where Codex's approach started to diverge from what would ultimately succeed. Rather than deeper exploration of the tree structure, Codex committed to finding a computational shortcut through recurrences. The next twenty minutes saw variations on this theme:</p>
+
+            <p>"Confirming leaf set multiplicity: For N equals 3, there are fewer distinct leaf sets (9) than ordered full ternary trees (12), confirming multiple distinct trees share the same leaf set; next step is to find a recurrence or generating function."</p>
+
+            <p>"Modeling node sets with 3D lattice closure: The node set forms a subset of the integers cubed closed under positive-axis children for internal nodes, with unique coordinates and fixed parent-child relations; D(N) thus counts valid internal-node sets of size N."</p>
+
+            <p>"Planning partition count computation: I'm structuring a dynamic programming approach that treats each part size m as having m colors, updating counts by performing the standard partition update multiplied by the number of ways to choose colors."</p>
+
+            <p>The reasoning remained technically sophisticated throughout. Codex was not making simple errors or producing nonsense. But it was pursuing an approach that, for this particular problem, could not reach the answer. The recurrence it sought either does not exist in simple form or requires deeper structural insight to derive.</p>
+
+            <h3>Inside Gemini's Thoughts</h3>
+
+            <p>Gemini's session log has a distinctive format that reveals its "thoughts" as structured subject-description pairs. These read almost like a researcher's lab notebook, documenting hypotheses, observations, and next steps. Let me share several that illuminate Gemini's approach.</p>
+
+            <p>Very early in the session, Gemini showed strong problem comprehension:</p>
+
+            <blockquote>
+                <p>Subject: Exploring Valid Configurations</p>
+                <p>Description: I'm now focusing on how the "provided these cubes are empty" condition affects valid arrangements. It seems the order of divisions doesn't affect the final count; only the final configuration of occupied cells matters.</p>
+            </blockquote>
+
+            <p>This is correct and important. The order-independence of final configurations is what makes the problem well-defined: we count configurations, not sequences.</p>
+
+            <p>Gemini immediately thought to check OEIS:</p>
+
+            <blockquote>
+                <p>Subject: Exploring Sequence Properties</p>
+                <p>Description: I've got a sequence: 1, 1, 3, 9, 30, 99, 336. I'm checking the Online Encyclopedia of Integer Sequences. It's probably related to "plane partitions" or "solid partitions". The subsequence 1, 3, 9, 30 seems really familiar now.</p>
+            </blockquote>
+
+            <p>The instinct to check OEIS is excellent. The guess about plane partitions shows knowledge of related mathematical structures. Unfortunately, the sequence is not indexed in OEIS under these terms.</p>
+
+            <p>When OEIS searches returned similar but not identical sequences, Gemini carefully investigated:</p>
+
+            <blockquote>
+                <p>Subject: Calculating and Comparing Values</p>
+                <p>Description: I've calculated the first few values of D(n), up to D(12). Now, I'm concerned about the discrepancy between my calculations and a search result. Specifically, my code gives D(7) as 1134, while the search result indicates 1155.</p>
+            </blockquote>
+
+            <p>This is careful verification. Gemini noticed the discrepancy and correctly concluded that the sequences are different rather than assuming its own code was wrong.</p>
+
+            <p>The pivot to recurrence-finding followed a similar pattern to Codex:</p>
+
+            <blockquote>
+                <p>Subject: Investigating and Coding Recurrence</p>
+                <p>Description: After confirming that the search result's A000139 sequence diverges from my calculations, I'm now focused on deriving a linear recurrence relation. The ratio of successive terms seems to be converging to approximately 3.4.</p>
+            </blockquote>
+
+            <p>Like Codex, Gemini spent considerable time trying to find recurrences of increasing complexity:</p>
+
+            <blockquote>
+                <p>Subject: Testing Recurrence Orders</p>
+                <p>Description: I'm now running the find_recurrence tool with modifications, to check for higher-order linear recurrences, specifically up to order eight. It previously failed, so I'm also testing the sequence with different starting indices.</p>
+            </blockquote>
+
+            <p>When linear recurrences failed, Gemini escalated to holonomic recurrences:</p>
+
+            <blockquote>
+                <p>Subject: Exploring Non-Standard Recurrence</p>
+                <p>Description: I'm now thinking about why a simple linear recurrence isn't working. It's becoming clearer that the usual suspects, integer coefficients or a low order, might not be the issue. The form of the recurrence could be more complex, perhaps with polynomial or rational function coefficients.</p>
+            </blockquote>
+
+            <p>This is actually excellent mathematical reasoning. Holonomic recurrences (with polynomial coefficients) are indeed more general than linear recurrences with constant coefficients. But even this more sophisticated approach did not yield results.</p>
+
+            <p>Near the end of the session, Gemini's thoughts reveal growing resignation:</p>
+
+            <blockquote>
+                <p>Subject: Rethinking the Search</p>
+                <p>Description: I've hit a dead end with the initial search; it seems like I need a different approach. I'm simplifying the query and removing unnecessary quotes to see if that helps me get the information I need.</p>
+            </blockquote>
+
+            <p>And finally:</p>
+
+            <blockquote>
+                <p>Subject: Exploring Sequence Properties</p>
+                <p>Description: I've checked the online encyclopedia of integer sequences, and it doesn't appear this one is indexed with the terms I've used. That's a curious result. I'm considering the possibility that this is a novel sequence.</p>
+            </blockquote>
+
+            <p>This realization, that the sequence might not be in any database, is important. It means the problem requires original work rather than lookup. But by this point, Gemini had run out of approaches to try.</p>
+
+            <h3>What Claude's Logs Do Not Show</h3>
+
+            <p>Claude's session log is less revealing about internal reasoning than Codex's or Gemini's. Claude does not produce explicit "reasoning" or "thought" entries in the same format. Instead, the log shows tool uses, code generation, and outputs. We can infer the reasoning from what Claude did, but we do not have the same direct window into its thinking process.</p>
+
+            <p>What we can see is the trajectory of Claude's work: initial problem understanding, web searches for related structures, brute-force verification, analysis of sequence properties, and eventually the correct answer. The critical insight, recognizing the connection to 3D pebbling configurations, appears in Claude's final documentation but not in intermediate reasoning traces.</p>
+
+            <p>This opacity cuts both ways. On one hand, it makes Claude's success harder to analyze: we know it worked, but we cannot trace exactly how the insight emerged. On the other hand, it may reflect a more integrated reasoning process that does not decompose into discrete steps as readily as Codex's or Gemini's approaches do.</p>
+
+            <h3>The Mathematics: A Deeper Look</h3>
+
+            <p>For readers interested in the mathematical details, let me expand on the structure that makes this problem tractable. This section is more technical than the rest of the essay and can be skipped without losing the main thread.</p>
+
+            <p>The key insight is to characterize valid configurations by their "division sets," the set D of cells where divisions occurred. If we know D, we can reconstruct the final configuration: the amoebas occupy cells that were created by some division in D but did not themselves divide. These are the "leaves" of the division tree.</p>
+
+            <p>For D to be valid, it must satisfy three constraints. First, D must contain the origin, since that is where the first division happens. Second, D must be "ancestrally closed": if a cell is in D, then all cells on the path from the origin to that cell (through the parent-child relationships defined by division) must also be in D. Third, no two cells in D can "conflict" by sharing a common child.</p>
+
+            <p>Two cells (x1, y1, z1) and (x2, y2, z2) share a common child if and only if one of them could produce a child that the other already occupies or could also produce. This happens when their coordinate differences match specific patterns. Concretely, cells at positions differing by vectors like (1, negative 1, 0), (negative 1, 1, 0), and their cyclic permutations will share a child and therefore cannot both be in D.</p>
+
+            <p>This conflict structure has an elegant interpretation. Consider the "level" of a cell, defined as L equals x plus y plus z. Within each level L, cells can be grouped by the value k equals x plus y. The conflict constraint implies that at most one cell from each group can be in D. This dramatically reduces the state space: instead of tracking arbitrary subsets of cells, we only need to track which groups are "active" at each level.</p>
+
+            <p>This observation suggests a dynamic programming approach. We can build up valid division sets level by level, tracking which groups contain cells and using the connectivity and conflict constraints to determine valid transitions. The details of implementing this efficiently for N equals 10,000 require additional cleverness, likely involving modular arithmetic and careful state representation, but the core insight makes the problem tractable.</p>
+
+            <p>The two-dimensional analog of this problem, where amoebas divide into two offspring on a 2D grid, corresponds to OEIS sequence A007902. That sequence counts what are variously called "pebbling configurations" or "configurations of pebblings" on a chessboard. The three-dimensional version generalizes this structure, which is apparently what Claude recognized and exploited.</p>
+
+            <h2>Part Five: Comparative Analysis</h2>
 
             <h3>Why Claude Succeeded</h3>
 
@@ -337,6 +457,34 @@
 
             <p>If anything, this experiment suggests that the ability to effectively use external resources is itself a form of intelligence that matters. Knowing what to search for, how to evaluate results, and how to integrate findings with one's own reasoning are sophisticated cognitive skills that some AI systems have developed better than others.</p>
 
+            <h3>Lessons for AI Development</h3>
+
+            <p>This experiment suggests several directions that might improve AI reasoning capabilities. I offer these as observations, not as definitive recommendations.</p>
+
+            <p>First, training on diverse mathematical content may be more important than training on large amounts of code. The ability to recognize structural analogies across different areas of mathematics seems crucial for solving hard problems. A system that has seen many examples of how different mathematical structures relate to each other may be better equipped to recognize new connections.</p>
+
+            <p>Second, the ability to effectively use external resources, particularly mathematical databases like OEIS, appears to be an important capability. Claude's success involved finding relevant connections in external sources and integrating them with its own reasoning. This is how human mathematicians work: they draw on libraries of known results to approach new problems. AI systems that can do this effectively have an advantage.</p>
+
+            <p>Third, verification capabilities seem crucial. Claude verified its answer against known values before declaring success. Codex did not verify that its extrapolation was valid for larger inputs. Gemini verified against external sources but gave up when those sources could not help. The ability to check one's own work, through multiple independent methods when possible, seems to distinguish successful problem-solving from confident failure.</p>
+
+            <p>Fourth, the balance between persistence and pivoting is important. Codex persisted too long with an approach that was not working. Gemini may have pivoted too readily without deeply exploring any single direction. Claude's approach showed more balance: persistent enough to work through difficulties but flexible enough to try different framings. Training systems to recognize when an approach is fundamentally flawed, rather than just difficult, could improve performance on hard problems.</p>
+
+            <p>Fifth, the framing of problems matters enormously for success. Claude's initial framing, focusing on combinatorial structure, led naturally to the solution. Codex's framing, focusing on enumeration and recurrences, led to a dead end. Developing methods to try multiple framings systematically, or to recognize which framing is most likely to succeed for a given problem type, could substantially improve AI reasoning capabilities.</p>
+
+            <h3>Implications for Mathematical Research</h3>
+
+            <p>If AI systems can solve hard mathematical problems, what does this mean for mathematical research? I see several possibilities, ranging from optimistic to concerning.</p>
+
+            <p>The optimistic view is that AI becomes a powerful tool for mathematical discovery. Systems like Claude could help human mathematicians explore new territory, test conjectures, and find connections that humans might miss. The human role shifts from solving problems directly to formulating good questions and verifying AI-generated solutions. This could accelerate mathematical progress substantially.</p>
+
+            <p>A more moderate view is that AI becomes useful for certain types of problems but not others. Hard but well-defined problems like Project Euler may be tractable for AI, while more open-ended research questions remain the province of human creativity. AI assists with the "final mile" of converting insights into complete proofs, while humans provide the conceptual breakthroughs.</p>
+
+            <p>A concerning view is that AI-generated mathematics becomes difficult to trust or understand. If an AI produces a correct answer without a comprehensible explanation, have we really learned anything? Mathematical understanding traditionally involves not just knowing that something is true but grasping why it is true. AI-generated solutions that lack this comprehensibility may be practically useful but intellectually unsatisfying.</p>
+
+            <p>An even more concerning view is that AI capabilities in mathematics could enable misuse. Mathematical cryptography, for instance, depends on the difficulty of certain problems. If AI systems become substantially better at solving hard mathematical problems, some cryptographic assumptions might become invalid. This is speculative but not impossible.</p>
+
+            <p>Most likely, the reality will involve elements of all these views. AI will become increasingly useful for mathematical work while also raising new challenges around verification, attribution, and understanding. The mathematical community will need to develop new practices and norms to navigate this landscape.</p>
+
             <h3>Looking Forward</h3>
 
             <p>What does this experiment tell us about the future of AI reasoning?</p>
@@ -349,6 +497,84 @@
 
             <p>More speculatively, experiments like this one may become a standard part of AI evaluation. Current benchmarks focus on tasks that are easy to automate: bug fixes, code completion, straightforward algorithm implementation. Benchmarks that require genuine insight, like hard Project Euler problems or unsolved mathematical conjectures, could provide a different and perhaps more important signal about AI capabilities. We may need new evaluation paradigms to understand what current systems can and cannot do.</p>
 
+            <h2>Part Seven: Historical Context</h2>
+
+            <h3>The Evolution of AI Problem-Solving</h3>
+
+            <p>To appreciate what happened in this experiment, it helps to understand how far AI problem-solving has come. The history of artificial intelligence is littered with programs designed to solve mathematical and logical problems, each generation more capable than the last, yet each falling short of the kinds of insight demonstrated here.</p>
+
+            <p>In 1956, Allen Newell and Herbert Simon created the Logic Theorist, a program that could prove theorems in propositional logic. It successfully proved 38 of the 52 theorems in Principia Mathematica's second chapter, and for one theorem found a proof more elegant than the original. This was considered a landmark achievement, proof that machines could engage in what seemed like reasoning.</p>
+
+            <p>The next several decades saw the development of various expert systems and automated theorem provers. Programs like MACSYMA could perform symbolic mathematics. Systems like Otter and later Vampire could prove theorems in first-order logic. The four-color theorem was proved in 1976 with substantial computer assistance, though the "reasoning" involved was more brute-force case analysis than insight.</p>
+
+            <p>What changed with the advent of large language models is the nature of the reasoning involved. Earlier systems operated on explicit rules and representations. They could search through proof spaces or perform symbolic manipulation, but they could not recognize patterns in the way that human mathematicians do. They could not look at a problem and intuit that it might be related to something else they had seen before.</p>
+
+            <p>The systems tested in this experiment can do exactly that. When Claude recognized that the 3D amoeba problem is related to 2D pebbling configurations, it was not following an explicit rule that said "if you see X, try approach Y." It was pattern-matching across mathematical structures in a way that resembles human mathematical intuition. Whether we call this "understanding" is a philosophical question, but it is certainly a different kind of capability than earlier AI systems possessed.</p>
+
+            <h3>The Project Euler Community</h3>
+
+            <p>Project Euler occupies a unique niche in the mathematical programming landscape. Founded by Colin Hughes in 2001, it has grown to include over 800 problems and millions of registered users. The problems span a wide range of mathematical topics: number theory, combinatorics, geometry, probability, and more. What unites them is the emphasis on insight over brute computation.</p>
+
+            <p>The community around Project Euler has developed strong norms about not sharing solutions publicly. This is partly practical, since knowing the answer removes the challenge, and partly cultural, since the satisfaction of solving a hard problem is diminished if you know the solution is readily available. These norms have the side effect of making Project Euler problems genuinely novel challenges for AI systems: the answers are not in the training data in any direct form.</p>
+
+            <p>Problem 763, in particular, was published in September 2021 and has been solved by approximately 202 users as of this writing. With a difficulty rating of 100 percent (the maximum), it sits among the hardest problems on the platform. The small number of solvers over five years suggests that this is not a problem that yields to standard techniques or modest effort.</p>
+
+            <p>When I submitted Claude's answer, the system recorded me as the 203rd solver. There is no way to indicate that the solution came from an AI rather than a human. This raises interesting questions about the meaning of "solving" a problem and about how the mathematical community should think about AI-generated solutions. For now, the 203rd entry in the solver list is, in some sense, a machine.</p>
+
+            <h3>AI Benchmarks and Their Limitations</h3>
+
+            <p>The AI research community has developed many benchmarks for measuring various capabilities. For coding specifically, the most prominent include HumanEval, which tests function completion; SWE-Bench, which tests bug fixing in real repositories; and various competitive programming benchmarks like Codeforces ratings and LiveCodeBench scores.</p>
+
+            <p>These benchmarks serve important purposes. They provide standardized comparisons between systems, track progress over time, and identify areas for improvement. But they also have significant limitations that this experiment illustrates.</p>
+
+            <p>Most coding benchmarks test what might be called "within-distribution" capabilities: can the system implement standard algorithms correctly, fix common bug patterns, or complete functions that follow established conventions? These are important practical capabilities, but they do not test whether a system can handle truly novel problems that require insight.</p>
+
+            <p>The gap between benchmark performance and real-world capability can be substantial. All three systems tested here perform well on standard benchmarks. Claude, Codex, and Gemini are all frontier models that represent the current state of the art. Yet their performance on Project Euler 763 diverged dramatically, with one system succeeding completely and two failing completely.</p>
+
+            <p>This suggests that current benchmarks may systematically miss capabilities that matter for hard problems. A system that scores well on HumanEval can implement known algorithms but may not be able to discover new ones. A system that performs well on SWE-Bench can fix bugs in existing code but may not be able to design novel solutions to unprecedented problems.</p>
+
+            <p>As AI systems are increasingly deployed for tasks that require creativity and insight, we will need evaluation methods that capture these capabilities. Hard mathematical problems like Project Euler 763 may provide one such domain, though developing comprehensive benchmarks around mathematical insight is itself a significant challenge.</p>
+
+            <h2>Part Eight: Philosophical Reflections</h2>
+
+            <h3>Do These Systems Understand Mathematics?</h3>
+
+            <p>The question of whether AI systems "truly understand" what they are doing is as old as AI itself. John Searle's Chinese Room argument, proposed in 1980, suggested that a system could manipulate symbols correctly without understanding their meaning. The debate has continued through four decades of AI development.</p>
+
+            <p>This experiment does not resolve that debate, but it does complicate some simple views. If we define understanding purely behaviorally, as the ability to correctly solve problems and explain solutions, then Claude demonstrated understanding of the amoeba problem. It analyzed the structure correctly, identified relevant connections, derived the answer, and documented its reasoning coherently.</p>
+
+            <p>If we require something more, perhaps conscious experience of mathematical truth, or the ability to appreciate beauty in mathematics, or genuine creativity rather than sophisticated pattern matching, then the question becomes harder to answer. We cannot directly observe what, if anything, Claude "experiences" when solving a problem. We can only observe its behavior and outputs.</p>
+
+            <p>What seems clear is that the behavior we observed goes beyond simple lookup or template matching. The session logs show something that looks like reasoning: forming hypotheses, testing them, revising based on evidence, and eventually arriving at insight. Whether this constitutes "real" understanding in whatever sense we might mean that phrase, it is certainly more than rote computation.</p>
+
+            <p>Perhaps the more important question is not philosophical but practical. If an AI system can solve hard mathematical problems, explain its solutions, and help humans make progress on research challenges, does it matter whether it "truly" understands what it is doing? The answer may depend on context. For verifiable mathematical proofs, perhaps behavioral capability is sufficient. For more open-ended research where we need to trust AI judgment in novel situations, the question of genuine understanding may become more pressing.</p>
+
+            <h3>The Attribution Question</h3>
+
+            <p>When Claude solved Project Euler 763, who deserves credit? This is not merely an academic question. As AI systems become more capable, questions of attribution and intellectual property will become increasingly important.</p>
+
+            <p>One view is that I deserve the credit, since I set up the experiment, provided the problem, and submitted the answer. Under this view, Claude is a tool, not fundamentally different from a calculator or a compiler. The human who wields the tool gets credit for the results.</p>
+
+            <p>Another view is that Claude deserves the credit, since Claude actually did the mathematical work. I contributed nothing to the reasoning process beyond providing the initial prompt. Under this view, attributing the solution to me would be like attributing a novel to the person who commissioned it rather than the person who wrote it.</p>
+
+            <p>A third view is that Anthropic, the company that created Claude, deserves credit, since they developed the system that made the solution possible. Under this view, Claude's capabilities are the product of Anthropic's research, and individual outputs should be attributed to the organization rather than to any individual interaction.</p>
+
+            <p>A fourth view is that no one deserves individual credit, since the solution emerged from a distributed process involving my prompting, Claude's reasoning, Anthropic's training, the mathematical community's prior work on related problems, and countless other contributors. Under this view, the appropriate response is not attribution but acknowledgment of the collective nature of intellectual progress.</p>
+
+            <p>Current norms and legal frameworks are ill-equipped to handle these questions. Copyright law, for instance, generally requires human authorship. Scientific publication norms assume human researchers. The conventions around academic credit presuppose that the credited individuals actually did the work. All of these frameworks will need to evolve as AI capabilities advance.</p>
+
+            <h3>The Nature of Mathematical Insight</h3>
+
+            <p>What is it about mathematical insight that makes it so hard to automate? The history of AI is full of capabilities that seemed to require human intelligence until machines demonstrated them: chess playing, image recognition, natural language processing. Why has mathematical creativity proved so resistant?</p>
+
+            <p>One answer is that it has not been that resistant. This experiment demonstrates that current AI systems can sometimes achieve genuine mathematical insight. The capability exists; it is just not reliable or predictable. Claude solved a problem that has stymied most human attempts, which suggests that the barrier is not absolute.</p>
+
+            <p>Another answer focuses on the nature of mathematical problems. Unlike chess or image recognition, where the rules are fixed and the goal is clear, mathematics involves an open-ended space of possible problems and approaches. A chess-playing AI knows it wants to checkmate the king. A mathematics-doing AI must first figure out what question to ask and what approach might work. This meta-level reasoning, thinking about how to think about the problem, may be the hardest capability to develop.</p>
+
+            <p>A third answer emphasizes the role of analogy and connection. Mathematical insight often involves recognizing that a new problem is similar to something already understood. This requires not just knowledge of many mathematical structures but the ability to perceive abstract similarities between apparently different things. The connection between 3D amoeba configurations and 2D pebbling problems is not obvious; recognizing it requires seeing through surface differences to underlying structural parallels.</p>
+
+            <p>Current AI systems have some capability for analogical reasoning, as Claude's performance demonstrates. But this capability is uneven and unpredictable. Understanding what makes some systems better at analogy than others, and how to train for this capability reliably, remains an important research challenge.</p>
+
             <h2>Conclusion: The 203rd Solver</h2>
 
             <p>When I submitted Claude's answer to Project Euler, the site congratulated me on being the 203rd person to solve problem 763. In truth, I did not solve it. Claude did. But there is no checkbox for "AI-assisted solution," no way to register that the 203rd solver was not a person but a machine.</p>
@@ -358,6 +584,18 @@
             <p>The experiment described in this essay is a small glimpse of a future where AI systems are genuine intellectual partners, with all the complications that entails. We will need to develop new practices around verification, attribution, and trust. We will need to understand when AI assistance is likely to help and when it might mislead. We will need evaluation methods that go beyond simple benchmarks to capture the kinds of insight that matter for hard problems.</p>
 
             <p>For now, I will note that on January 21, 2026, three of the world's most sophisticated AI systems attempted a hard mathematical problem. One of them, through a combination of structural insight, careful reasoning, and effective use of external resources, found the answer. That is both remarkable and, in its own way, reassuring. Intelligence, artificial or otherwise, can still surprise us.</p>
+
+            <p>The experiment raises questions that will only become more pressing as AI capabilities advance. How do we evaluate AI systems when their performance varies so dramatically across problems? How do we know when to trust AI-generated solutions? How do we maintain human understanding of mathematics when machines can solve problems we cannot? How do we attribute credit and responsibility when AI systems contribute substantially to intellectual work?</p>
+
+            <p>These are not questions I can answer definitively. But I hope this detailed account of one experiment contributes to the conversation. The session logs, the code, the reasoning traces, all the raw material of this experiment, are available for others to examine and draw their own conclusions from. The 203rd solver of Project Euler 763 may have been a machine, but understanding what that means is still a task for human intelligence.</p>
+
+            <p>I began this experiment curious about what AI systems could do when faced with genuine intellectual challenge. I end it with a deeper appreciation for both the capabilities and the limitations of current systems. Claude's success was impressive, but Codex's and Gemini's failures were equally instructive. The gap between them reveals something important about the nature of mathematical reasoning that we are only beginning to understand.</p>
+
+            <p>Perhaps the most important lesson is humility. We do not yet have reliable AI mathematics. We do not yet understand what makes some problems tractable and others impossible for current systems. We do not yet know how to train AI systems that consistently achieve insight rather than just occasionally stumbling upon it. These are hard problems, perhaps as hard as the mathematical problems we are trying to solve with AI assistance.</p>
+
+            <p>But we are making progress. A few years ago, the idea that an AI system could solve a 100-percent difficulty Project Euler problem would have seemed far-fetched. Today it is a documented fact. The pace of advancement suggests that many things that seem impossible today will be routine tomorrow. The challenge for human researchers, mathematicians, and society more broadly is to prepare for that future while honestly confronting the limitations of the present.</p>
+
+            <p>And so, to return to where we started: on January 21, 2026, a simple prompt, a hard problem, and three AI minds. One succeeded. Two failed. And in the gap between success and failure lies a world of questions about intelligence, understanding, and the future of intellectual work. The experiment is over, but the implications are just beginning to unfold.</p>
 
             <img src="assets/images/euler-claude-congrats.png" alt="Project Euler congratulations page showing correct solution">
             <p class="image-caption">The 203rd solver of Project Euler 763 was an AI. The mathematics community will need to grapple with what this means.</p>
