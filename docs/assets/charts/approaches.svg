@@ -1,0 +1,57 @@
+<svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" style="font-family: Helvetica, Arial, sans-serif;">
+    <style>
+        .header { font-size: 12px; font-weight: 600; fill: #1c1917; }
+        .cell { font-size: 11px; fill: #44403c; }
+        .yes { fill: #059669; }
+        .no { fill: #dc2626; }
+        .partial { fill: #d97706; }
+    </style>
+
+    <!-- Title -->
+    <text x="300" y="25" text-anchor="middle" font-size="14" font-weight="600" fill="#1c1917">Problem-Solving Approaches Comparison</text>
+
+    <!-- Headers -->
+    <text x="150" y="60" text-anchor="middle" class="header">Claude</text>
+    <text x="300" y="60" text-anchor="middle" class="header">Codex</text>
+    <text x="450" y="60" text-anchor="middle" class="header">Gemini</text>
+
+    <!-- Row: Web Search -->
+    <text x="50" y="95" class="cell">Web Search</text>
+    <text x="150" y="95" text-anchor="middle" class="yes">Yes</text>
+    <text x="300" y="95" text-anchor="middle" class="no">No</text>
+    <text x="450" y="95" text-anchor="middle" class="yes">Yes</text>
+
+    <!-- Row: OEIS Lookup -->
+    <text x="50" y="125" class="cell">OEIS Lookup</text>
+    <text x="150" y="125" text-anchor="middle" class="yes">Yes</text>
+    <text x="300" y="125" text-anchor="middle" class="no">No</text>
+    <text x="450" y="125" text-anchor="middle" class="yes">Yes</text>
+
+    <!-- Row: Brute Force Simulation -->
+    <text x="50" y="155" class="cell">Brute Force Sim</text>
+    <text x="150" y="155" text-anchor="middle" class="yes">Yes</text>
+    <text x="300" y="155" text-anchor="middle" class="yes">Yes</text>
+    <text x="450" y="155" text-anchor="middle" class="yes">Yes</text>
+
+    <!-- Row: Recurrence Finding -->
+    <text x="50" y="185" class="cell">Recurrence Finding</text>
+    <text x="150" y="185" text-anchor="middle" class="yes">Yes</text>
+    <text x="300" y="185" text-anchor="middle" class="yes">Yes</text>
+    <text x="450" y="185" text-anchor="middle" class="yes">Yes</text>
+
+    <!-- Row: Structural Insight -->
+    <text x="50" y="215" class="cell">Structural Insight</text>
+    <text x="150" y="215" text-anchor="middle" class="yes">Yes</text>
+    <text x="300" y="215" text-anchor="middle" class="partial">Partial</text>
+    <text x="450" y="215" text-anchor="middle" class="no">No</text>
+
+    <!-- Row: Correct Answer -->
+    <text x="50" y="245" class="cell" font-weight="600">Correct Answer</text>
+    <text x="150" y="245" text-anchor="middle" class="yes" font-weight="600">Yes</text>
+    <text x="300" y="245" text-anchor="middle" class="no" font-weight="600">No</text>
+    <text x="450" y="245" text-anchor="middle" class="no" font-weight="600">No</text>
+
+    <!-- Separators -->
+    <line x1="50" y1="70" x2="550" y2="70" stroke="#e7e5e4" stroke-width="1"/>
+    <line x1="50" y1="260" x2="550" y2="260" stroke="#e7e5e4" stroke-width="1"/>
+</svg>

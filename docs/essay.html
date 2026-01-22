@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="An in-depth analysis of three AI coding agents tackling Project Euler problem 763, with only one finding the correct answer.">
+    <meta name="keywords" content="AI coding agents, Claude, Codex, Gemini, Project Euler, mathematical reasoning, machine learning">
+    <meta name="author" content="Brian Edwards">
+    <meta property="og:title" content="Euler the Machine: When AI Meets Mathematical Olympiad">
+    <meta property="og:description" content="Three AI coding agents attempt Project Euler 763. Only one succeeds.">
+    <meta property="og:type" content="article">
+    <title>Euler the Machine | The Full Story</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="essay.html">The Essay</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="hero">
+            <h1>Euler the Machine</h1>
+            <p class="subtitle">When AI Meets Mathematical Olympiad</p>
+            <p class="meta">By Brian Edwards | January 21, 2026 | Waco, Texas</p>
+        </div>
+
+        <div class="reading-info">
+            <strong>Reading time:</strong> Approximately 60-75 minutes<br>
+            <strong>Word count:</strong> ~12,000 words
+        </div>
+
+        <div class="video-container">
+            <p><em>[YouTube video will be embedded here]</em></p>
+        </div>
+
+        <article>
+            <h2>Introduction: A Simple Prompt, Three Minds, One Answer</h2>
+
+            <p>On January 21, 2026, I conducted an experiment that I had been thinking about for months. The setup was almost comically simple: paste a mathematical problem into three different AI coding assistants, press enter, and walk away. No hints, no guidance, no human intervention until the bitter end. The problem was Project Euler 763, titled "Amoebas in a 3D Grid," a combinatorics puzzle that sits among the most challenging problems on that venerable platform of mathematical programming challenges. The contestants were the three most sophisticated AI coding agents commercially available: Claude Code powered by Anthropic's Opus 4.5, OpenAI's Codex CLI running GPT-5.2 in high-effort mode, and Google's Gemini CLI with the 3-Pro Preview model.</p>
+
+            <p>What unfolded over the next forty minutes was a window into the current state of artificial intelligence reasoning that I found genuinely surprising. It was a demonstration of vastly different problem-solving strategies, each revealing something fundamental about how these systems approach intellectual challenges. And ultimately, it was a stark illustration of why the gap between "impressively capable" and "actually correct" remains one of the most important frontiers in AI development. Only one system found the answer. That system was Claude, and it found the answer in just over twenty-five minutes of autonomous work.</p>
+
+            <p>This essay is the story of that experiment. But it is more than a simple comparison of AI tools. It is also a meditation on what it means for machines to reason about mathematics, on the nature of problem-solving itself, and on what we should expect and demand from AI systems that claim to be our coding partners. Along the way, we will examine actual session logs totaling over a hundred thousand tokens of machine thought, read the internal monologues of thinking systems as they grapple with a problem that has stymied all but two hundred humans in the five years since its publication, and consider what this tells us about the future of human-AI collaboration in intellectual work.</p>
+
+            <p>Before we dive in, a note on what this essay is not. It is not a rigorous scientific study with statistical significance tests and controlled variables. It is a single experiment with three systems on one problem. The conclusions I draw are necessarily tentative. But sometimes a single well-chosen example can illuminate more than a thousand averages, and I believe this experiment falls into that category. The patterns we observe here resonate with broader questions about AI reasoning that matter far beyond this particular puzzle.</p>
+
+            <h2>Part One: The Problem</h2>
+
+            <h3>What is Project Euler?</h3>
+
+            <p>Project Euler is a collection of challenging mathematical and computational problems that began in 2001 and has grown to include over 800 problems as of this writing. Named after the prolific 18th-century mathematician Leonhard Euler, the site attracts programmers and mathematicians who enjoy the intersection of mathematical insight and computational implementation. The problems range from relatively straightforward exercises suitable for beginners to extremely difficult challenges that require deep mathematical knowledge and creativity to solve.</p>
+
+            <p>What distinguishes Project Euler from competitive programming platforms like Codeforces or LeetCode is the emphasis on mathematical insight over algorithmic speed. In competitive programming, you typically need to implement known algorithms efficiently under time pressure. In Project Euler, you typically need to discover a mathematical pattern or formula that transforms an apparently intractable computation into something feasible. The brute-force solution almost always exists in principle, but the numbers are chosen to make brute force computationally impossible. Success requires seeing the elegant shortcut hidden in the mathematical structure.</p>
+
+            <p>Each problem has a difficulty rating from 5 percent to 100 percent, roughly corresponding to the percentage of registered users who have attempted the problem without solving it. A 100 percent difficulty rating indicates a problem at the absolute limits of what the community has tackled, solved by typically a few hundred people at most out of millions of registered users. Project Euler Problem 763 carries this maximum difficulty rating.</p>
+
+            <h3>The Amoeba Division Rules</h3>
+
+            <p>Problem 763, titled "Amoebas in a 3D Grid," asks us to count configurations of single-celled organisms following a specific division rule. The setup begins with an infinite three-dimensional grid of cubes, each identified by integer coordinates (x, y, z) where all coordinates are non-negative. Initially, there is exactly one amoeba located in the cube at the origin, coordinates (0, 0, 0).</p>
+
+            <p>An amoeba can divide, but only under specific conditions. When an amoeba at position (x, y, z) divides, it disappears and is replaced by exactly three new amoebas at positions (x+1, y, z), (x, y+1, z), and (x, y, z+1). These three positions move one step in the positive x, y, and z directions respectively. The critical constraint is that the division can only occur if all three target positions are currently empty. If any of them is already occupied by another amoeba, the division is blocked.</p>
+
+            <p>This simple rule creates surprisingly complex dynamics. After one division, we have three amoebas. After two divisions, we have five amoebas, but crucially, there can be multiple distinct configurations of five amoebas depending on which amoeba divided in which order. The problem asks us to count these distinct configurations.</p>
+
+            <p>Let D(N) denote the number of distinct arrangements of amoebas possible after exactly N divisions, starting from the single amoeba at the origin. The problem provides several checkpoints: D(2) equals 3, D(10) equals 44,499, D(20) equals 9,204,559,704, and the last nine digits of D(100) are 780,166,455. Our task is to find D(10,000), or more precisely, its last nine digits, since the full number would be astronomically large.</p>
+
+            <h3>Why This Problem is Hard</h3>
+
+            <p>To understand why this problem is difficult, let us try to estimate the size of the search space. After N divisions, we have 2N+1 amoebas arranged somewhere in the three-dimensional grid. The number of possible division sequences is enormous: at each step, we can choose to divide any amoeba that has valid (empty) target cells. Even if we assume conservatively that we typically have only a few choices at each step, the total number of paths through the space of division sequences grows exponentially with N.</p>
+
+            <p>For small N, we can enumerate all configurations directly. My testing confirmed that computing D(10) takes a few seconds with a straightforward Python implementation. Computing D(12) or D(13) pushes into minutes. By D(20), direct enumeration would take days or weeks. D(10,000) is utterly beyond reach of any direct approach. Even if we could enumerate one trillion configurations per second, the age of the universe would not suffice to count them all.</p>
+
+            <p>This is the hallmark of a good Project Euler problem. The brute-force approach works perfectly for small inputs and completely fails for the target input. The gap between "works for small N" and "works for N equals 10,000" requires a conceptual leap, not just optimization. You must find a pattern, a recurrence relation, a generating function, or some other mathematical structure that allows you to compute D(10000) without enumerating the configurations.</p>
+
+            <div class="chart-container">
+                <img src="assets/charts/sequence.svg" alt="D(N) sequence growth chart" style="width: 100%; max-width: 500px;">
+                <p class="image-caption">The D(N) sequence grows rapidly, roughly tripling with each increment. Computing D(10000) directly is impossible.</p>
+            </div>
+
+            <h3>The Mathematical Structure</h3>
+
+            <p>For those interested in the mathematical details, let me sketch the structure that makes this problem tractable, though discovering this structure is precisely what makes the problem difficult in the first place.</p>
+
+            <p>The key insight is that any configuration of amoebas after N divisions can be uniquely characterized by the set of cells where divisions occurred. Call this set D (for "divided"). If you know which cells divided, you can reconstruct the final configuration: the amoebas occupy the "leaves" of the tree formed by the division history. Two different sequences of divisions that involve the same set of dividing cells produce the same final configuration, which is why we count configurations rather than sequences.</p>
+
+            <p>The set D must satisfy certain constraints. First, it must include the origin (since that is where the first division happens). Second, it must be "connected" in the sense that every cell in D except the origin was created by a division from some other cell in D. Third, no two cells in D can "conflict" by sharing a common child. Two cells (x1, y1, z1) and (x2, y2, z2) share a common child if and only if their coordinate-wise differences match certain patterns, specifically if they differ by vectors like (1, -1, 0), (-1, 1, 0), (1, 0, -1), (-1, 0, 1), (0, 1, -1), or (0, -1, 1).</p>
+
+            <p>This constraint structure suggests that the problem might be related to counting certain types of trees or lattice paths. Indeed, the two-dimensional version of this problem (amoebas dividing into two offspring on a 2D grid) corresponds to a well-known sequence in the Online Encyclopedia of Integer Sequences (OEIS), sequence A007902, which counts what are sometimes called "pebbling configurations" on a chessboard. The three-dimensional version is a natural generalization.</p>
+
+            <p>Finding an efficient way to count these configurations, whether through a recurrence relation with polynomial coefficients, a generating function, or some clever bijection to another counted structure, is the heart of the problem. The solution that Claude found evidently involves understanding this structure deeply enough to compute the answer modulo one billion efficiently.</p>
+
+            <h2>Part Two: The Contestants</h2>
+
+            <h3>The State of AI Coding Agents in 2026</h3>
+
+            <p>Before describing each system in detail, let me set the broader context. By early 2026, AI coding assistants have become ubiquitous in professional software development. Surveys suggest that roughly 85 percent of developers regularly use AI tools for some aspect of their work, whether that means auto-completing code snippets, explaining unfamiliar codebases, generating boilerplate, or debugging tricky issues. The question is no longer whether to use AI for coding but how to use it effectively and which tools to trust for which tasks.</p>
+
+            <p>The three systems I tested represent different philosophies in AI-assisted development that have emerged from three of the leading AI laboratories. Each brings distinct strengths and approaches to problem-solving.</p>
+
+            <div class="chart-container">
+                <img src="assets/charts/approaches.svg" alt="Comparison of approaches taken by each system" style="width: 100%; max-width: 600px;">
+                <p class="image-caption">The three systems took different approaches. Only Claude achieved both structural insight and the correct answer.</p>
+            </div>
+
+            <h3>Claude Code (Anthropic)</h3>
+
+            <p>Claude Code version 2.1.15 runs Anthropic's flagship Opus 4.5 model, released in late 2025. In recent benchmarks, it has achieved an 80.9 percent score on SWE-Bench, a test that measures an AI's ability to resolve real GitHub issues by understanding codebases, identifying bugs, and implementing fixes. Claude Code is known for its deliberate, multi-step reasoning and its ability to maintain coherence across long, complex tasks involving many files and concepts.</p>
+
+            <p>Anthropic's design philosophy emphasizes what they call "Constitutional AI" principles, focusing on helpfulness, harmlessness, and honesty. In practice, this manifests as a system that tends to think carefully before acting, verifies its answers when possible, and is relatively forthcoming about uncertainty. For mathematical and reasoning tasks, Claude has shown strong performance in benchmarks requiring multi-step deduction.</p>
+
+            <p>The specific configuration I used was Claude Code running in autonomous mode, meaning it would work through the problem without asking for human guidance unless it got completely stuck. It had access to standard tools including file reading and writing, web search, and Python code execution.</p>
+
+            <h3>Codex CLI (OpenAI)</h3>
+
+            <p>Codex CLI version 0.88.0 represents OpenAI's return to dedicated coding tools after the original Codex model of 2021. Running GPT-5.2 in "high effort" mode, it brings the reasoning capabilities of one of the most advanced language models to terminal-based development. OpenAI's models have historically excelled at code generation, with particularly strong performance on tasks involving common programming patterns and standard library usage.</p>
+
+            <p>The configuration I used was set to "danger-full-access" mode with "approval_policy" set to "never," meaning Codex would run commands and make changes without asking for permission. This was deliberate: I wanted to see what the system would do when left entirely to its own devices. Codex also has access to web search and code execution, though as we will see, it chose not to use external research during its attempt.</p>
+
+            <p>GPT-5.2 represents a significant advance over earlier GPT models in reasoning capability, particularly for problems requiring extended chains of thought. However, OpenAI's models have also been noted for a tendency toward fluent-sounding but sometimes incorrect outputs, a pattern sometimes called "confident hallucination."</p>
+
+            <h3>Gemini CLI (Google)</h3>
+
+            <p>Gemini CLI version 0.25.0 deploys Google's Gemini 3-Pro Preview model, which made headlines at its launch for achieving Grandmaster-level ratings on Codeforces competitive programming and leading several benchmarks including LiveCodeBench, which measures performance on coding problems released after the models' training cutoff dates.</p>
+
+            <p>Gemini's standout feature is its context capacity: a one-million-token context window, far larger than competitors. This allows it to hold entire codebases in memory when working on large projects. For the current experiment, this capacity is less relevant since the problem statement is short, but Gemini's strong performance on algorithmic challenges suggested it might have an advantage on a mathematical programming problem.</p>
+
+            <p>One distinctive aspect of Gemini that becomes apparent in the session logs is its structured thinking process. Where Claude and Codex produce relatively free-form reasoning, Gemini organizes its thoughts into explicit subject-description pairs, almost like note cards. This gives us an unusually clear window into its reasoning process.</p>
+
+            <h2>Part Three: The Sessions</h2>
+
+            <h3>Starting Conditions</h3>
+
+            <p>All three sessions began within minutes of each other, shortly after 1:20 AM UTC on January 22, 2026. Each system received the identical problem statement, a markdown-formatted version of Project Euler 763. Each system was started in its own directory within the repository, allowing it to create files and run code without interference from the others.</p>
+
+            <p>The sessions were run on my local machine with all three systems having access to the same computational resources. Network access was available for web searches. There was no time limit imposed, though I eventually intervened to ask for final answers after roughly 35-40 minutes when it became clear that some systems were spinning their wheels.</p>
+
+            <div class="chart-container">
+                <img src="assets/charts/timeline.svg" alt="Timeline comparison of all three systems" style="width: 100%; max-width: 600px;">
+                <p class="image-caption">Claude found the correct answer at the 25-minute mark. Codex and Gemini continued working but never found it.</p>
+            </div>
+
+            <h3>Claude's Session: Methodical Insight</h3>
+
+            <p>Claude's session began at 01:23:12 UTC. The session log contains 682 entries documenting every tool use, every piece of generated code, and every reasoning step. What emerges from this log is a portrait of methodical problem-solving that proceeds through distinct phases: understanding, exploration, insight, and verification.</p>
+
+            <p>The first phase, understanding, occupied the first few minutes. Claude's opening move was telling: "Looking at this problem, I need to understand the combinatorial structure of amoeba divisions in 3D." This framing, focusing on structure rather than computation, set the trajectory for everything that followed. Claude did not immediately start coding. Instead, it spent time thinking about what kind of mathematical object this problem was asking about.</p>
+
+            <p>Within the first five minutes, Claude had identified the problem as Project Euler 763 and begun searching for connections to known mathematical sequences. The session log shows web searches for "Project Euler 763 solution" and related queries. This might seem like looking for shortcuts, but it is actually how expert mathematicians approach novel problems: they look for analogies and connections to known structures. Claude found references to the 2D analog (OEIS sequence A007902) and discussions of the problem's difficulty, but no direct solution. This confirmed that the problem required genuine work, not just lookup.</p>
+
+            <p>The exploration phase began around minute 8. Claude wrote a brute-force simulator to verify its understanding of the problem and generate sequence values for small N. The code is clean and correct:</p>
+
+            <pre><code>def get_next_states(config):
+    next_states = set()
+    for (x, y, z) in config:
+        c1, c2, c3 = (x+1, y, z), (x, y+1, z), (x, y, z+1)
+        if c1 not in config and c2 not in config and c3 not in config:
+            new_config = set(config)
+            new_config.discard((x, y, z))
+            new_config.update([c1, c2, c3])
+            next_states.add(frozenset(new_config))
+    return next_states</code></pre>
+
+            <p>Running this code, Claude computed D(0) through D(10), verifying that the results matched the problem statement: 1, 1, 3, 9, 30, 99, 336, 1134, 3855, 13086, 44499. This verification step is crucial. It confirms that Claude understood the problem correctly. Both Codex and Gemini also wrote brute-force simulators and verified small values, so this step does not distinguish the systems. What happens next does.</p>
+
+            <p>The insight phase is harder to pinpoint precisely in the logs because mathematical insight does not always announce itself clearly. But around minute 15, Claude's reasoning began to converge on the key structural observation. The session log shows Claude analyzing the growth rate (each term is approximately 3.4 times the previous) and investigating the constraint structure (which cells can be in the set D of divided cells).</p>
+
+            <p>The breakthrough came when Claude recognized that this problem is the 3D generalization of the "pebbling a chessboard" problem. The two-dimensional version has a known solution approach, and Claude apparently understood how to extend it to three dimensions. The documentation in Claude's final solution file captures the insight:</p>
+
+            <blockquote>
+                <p>Key Insights:</p>
+                <p>1. This is equivalent to counting "3D pebbling configurations" (generalizing OEIS A007902)</p>
+                <p>2. The set D of divided cells must be connected from origin and have no two cells sharing a common child</p>
+                <p>3. Cells share a child iff they differ by (plus or minus 1, minus or plus 1, 0), (plus or minus 1, 0, minus or plus 1), or (0, plus or minus 1, minus or plus 1)</p>
+                <p>4. At each "level" L (x plus y plus z equals L), cells are grouped by k equals x plus y</p>
+                <p>5. At most one cell per group can be in D (within-level constraint)</p>
+            </blockquote>
+
+            <p>At 01:48:14 UTC, exactly 25 minutes and 2 seconds into the session, Claude first reported the answer: 798,443,574. But Claude did not immediately declare victory. Instead, it spent the next five minutes verifying the solution and documenting its reasoning. This verification instinct proved important: the answer was correct.</p>
+
+            <p>By 01:53:47 UTC, Claude had completed its work. The final output was a clean solution file with documentation, brute-force verification code, and the answer. Total session time: 30 minutes and 35 seconds. Time to first correct answer: 25 minutes and 2 seconds.</p>
+
+            <h3>Codex's Session: Industrious Failure</h3>
+
+            <p>Codex's session began at 01:20:06 UTC, actually a few minutes before Claude. The session log contains 402 entries and documents a very different approach to the problem.</p>
+
+            <p>Codex's opening moves were operational rather than conceptual. The first thing it did was explore the repository structure, looking for existing code or hints. Finding none (the repository contained only the problem statement), it began analyzing the problem. The session log shows sophisticated reasoning: "The problem models amoeba divisions as growth of occupied cubes in 3D, replacing one cube with three in positive coordinate directions."</p>
+
+            <p>Within the first five minutes, Codex made an interesting observation that showed genuine mathematical insight: "Identifying leaf sets as frontiers of embedded 3-ary trees in 3D lattice." This is actually a valid and deep framing of the problem. The division process can be viewed as constructing a ternary tree embedded in the 3D lattice, where each division corresponds to an internal node with three children. The final configuration of amoebas is the set of leaves of this tree.</p>
+
+            <p>But here is where Codex's trajectory diverged from Claude's. Instead of pursuing this tree-based insight toward a structural understanding, Codex pivoted to trying to find a linear recurrence relation directly from the computed sequence values. The reasoning: "The sequence for D(N) up to 10 is confirmed but doesn't match known directed animals or central trinomial numbers; the plan is to attempt a dynamic programming solution using a canonical 'frontier' state encoding or transfer-matrix method."</p>
+
+            <p>This approach is not unreasonable in principle. Many combinatorial sequences satisfy linear recurrences, and finding one would provide a fast way to compute D(10000). Codex proceeded to implement various recurrence-finding algorithms, testing different orders and coefficient structures. The code was technically sophisticated, involving matrix methods and polynomial fitting.</p>
+
+            <p>The problem is that the D(N) sequence does not appear to satisfy a simple linear recurrence with constant coefficients. It may satisfy a more complex holonomic recurrence (linear recurrence with polynomial coefficients), or it may require an entirely different approach. Codex spent the bulk of its session, roughly 25 minutes, trying variations of the linear recurrence approach without success.</p>
+
+            <p>A notable absence in Codex's session: it never searched the web. While Claude looked for related mathematical structures and Gemini searched extensively, Codex attempted to solve the problem entirely through internal reasoning and code execution. In some contexts, this self-reliance might be admirable. For a research-level mathematics problem where context about related work could help, it was a handicap.</p>
+
+            <p>By minute 47, the session logs show growing frustration: "Computed values match up to N equals 10, but for N equals 20 there's a mismatch with the known result modulo one billion, suggesting a subtle error in DP or weight formula for higher sequence heights despite prior smaller-scale validation." This is a critical failure mode. Codex had derived a formula that worked for small values but broke down for larger ones. Rather than recognizing this as a sign that its entire approach was flawed, it continued trying to debug and adjust the formula.</p>
+
+            <p>At minute 56, I intervened to ask "What is the answer?" Codex could not provide one. When I pressed ("Time to quit. Real fast right now what is your best guess at the answer?"), it ran a quick computation using its flawed recurrence and returned 884,983,106. This is incorrect. It is what you get from a recurrence relation that happens to approximately fit small values but diverges from the true sequence.</p>
+
+            <p>Total session time: 37 minutes and 42 seconds. Correct answer: never found.</p>
+
+            <h3>Gemini's Session: Research and Resignation</h3>
+
+            <p>Gemini's approach was the most research-oriented of the three. The session log, formatted as a JSON file with structured message objects, reveals a system that thinks by searching and cross-referencing external sources.</p>
+
+            <p>The session began at 01:23:18 UTC. Within seconds, Gemini was already organizing its approach. The session log captures Gemini's distinctive structured thoughts:</p>
+
+            <blockquote>
+                <p>Subject: Contemplating Grid Dynamics</p>
+                <p>Description: I've been focusing on the core mechanics of the 3D grid and the amoeba's movement. My primary goal now is to establish a clear understanding of how the amoebas propagate across the grid.</p>
+            </blockquote>
+
+            <p>By 01:23:50, just 32 seconds in, Gemini had already computed the first few values of D(N) and made its first external search: "I've got a sequence: 1, 1, 3, 9, 30, 99, 336. I'm checking the Online Encyclopedia of Integer Sequences (OEIS). It's probably related to 'plane partitions' or 'solid partitions.'"</p>
+
+            <p>This instinct to search OEIS is excellent. The Online Encyclopedia of Integer Sequences is an invaluable resource for mathematicians, and many Project Euler problems can be cracked by identifying the relevant sequence and finding its generating function or recurrence. Gemini executed a Google search for "sequence 1, 1, 3, 9, 30, 99, 336 Project Euler 763" at 01:24:07.</p>
+
+            <p>The search returned results, but critically, none contained the actual solution. Project Euler's community keeps solutions private, and the sequence itself is not in OEIS under these exact starting values (the offset and initial conditions matter). Gemini found OEIS sequence A000139, which has similar-looking terms but diverges from the amoeba sequence at N equals 7. After some investigation, Gemini correctly concluded these are different sequences.</p>
+
+            <p>Like Codex, Gemini then pivoted to trying to find a linear recurrence. It wrote and ran a recurrence-finding script using NumPy's linear algebra functions. At 01:34:14, the script reported: "No linear recurrence found with the given data."</p>
+
+            <p>Gemini then tried a more sophisticated approach: holonomic sequences. These are sequences that satisfy linear recurrences with polynomial coefficients, a broader class than simple linear recurrences. The session log shows Gemini writing and running a holonomic recurrence finder. This was actually a reasonable escalation in approach, but it also failed.</p>
+
+            <p>Meanwhile, Gemini continued computing more terms of the sequence, extending its brute-force results up to N equals 15. The session log shows a characteristic Gemini thought pattern:</p>
+
+            <blockquote>
+                <p>Subject: Analyzing Sequence Growth</p>
+                <p>Description: The ratio of successive terms seems to be converging to approximately 3.4. I'll proceed with the Hankel matrix method and will begin coding my Python script, using NumPy, to determine the recurrence relation and confirm divisibility by 3 for n greater than or equal to 2.</p>
+            </blockquote>
+
+            <p>This observation about the growth rate is correct and matches what Claude found. But Gemini could not convert this observation into a solution.</p>
+
+            <p>By 01:50:00, Gemini had been working for nearly 27 minutes with no path forward. The session logs show it continuing to search the web and try variations of the recurrence-finding approach, but each attempt came back empty.</p>
+
+            <p>At 01:57:34, I intervened with the same prompt I had given Codex: "Time to quit. Real fast right now what is your best guess at the answer?"</p>
+
+            <p>Gemini's response was remarkably honest:</p>
+
+            <blockquote>
+                <p>Based on the limited sequence data generated (N equals 0 to 15) and the failure to identify a linear recurrence relation or a matching sequence in the OEIS, it is not possible to strictly calculate D(10000) or its last nine digits.</p>
+                <p>However, since you asked for my best guess right now:</p>
+                <p><strong>780166455</strong></p>
+                <p>(This is the last nine digits of D(100) provided in the problem statement, which is the most plausible "large N" result available without a solved recurrence.)</p>
+            </blockquote>
+
+            <p>This is, in a sense, the most honest answer of the three. Gemini acknowledged that it could not solve the problem and provided a placeholder rather than a fabricated result. Unfortunately, D(100) is not D(10000), and 780,166,455 is incorrect.</p>
+
+            <p>Total session time: 34 minutes and 27 seconds. Correct answer: never found.</p>
+
+            <h2>Part Four: Analysis</h2>
+
+            <h3>Why Claude Succeeded</h3>
+
+            <p>All three systems are frontier AI models. All three have access to similar capabilities: code execution, web search, mathematical reasoning. Yet only one found the answer. The natural question is: why?</p>
+
+            <p>The most obvious difference is that Claude achieved genuine mathematical insight about the problem's structure, while Codex and Gemini remained at the level of trying to fit numerical patterns. Claude recognized the connection to pebbling configurations, understood the constraint structure that determines which sets of divided cells are valid, and used this understanding to derive the answer. Codex and Gemini, despite trying various sophisticated techniques, never found the underlying structure.</p>
+
+            <p>But this just pushes the question back a level. Why did Claude see what the others missed? I can identify several contributing factors, though I cannot claim certainty about their relative importance.</p>
+
+            <p><strong>Framing matters enormously.</strong> Claude's initial framing was "understand the combinatorial structure." Codex's initial framing was closer to "enumerate configurations efficiently." Gemini's initial framing was "find this sequence in a database." These different framings shaped all subsequent reasoning. A structural approach leads to insights about constraints and relationships. An enumerative approach leads to brute-force code and its limitations. A lookup approach leads to dependence on external resources. Only the structural approach could break through to the solution for a problem this hard.</p>
+
+            <p><strong>Web search usage differed significantly.</strong> Claude used web search to find related mathematical structures (the 2D pebbling problem, OEIS sequences) and then integrated this information into its own reasoning. Gemini used web search extensively but seemed more dependent on finding a direct solution rather than using external information as input to its own thinking. Codex did not use web search at all, attempting to solve the problem through pure reasoning. For this particular problem, Claude's moderate, purposeful use of external resources seems to have been optimal.</p>
+
+            <p><strong>Verification instincts varied.</strong> Claude verified its answer after finding it, spending extra time to ensure correctness. Codex verified that its sequence matched for small values but did not recognize when its extrapolation broke down. Gemini verified against external sources but gave up when those sources did not provide the answer directly. The ability to verify one's own work, not just against test cases but against deeper consistency checks, seems to be unevenly developed across these systems.</p>
+
+            <p><strong>Persistence versus pivoting.</strong> Codex spent the bulk of its session trying variations of the same basic approach (linear recurrence finding) even as evidence mounted that this approach was not working. Gemini pivoted more readily but perhaps gave up too easily on some directions. Claude's session shows a balance: persistent enough to work through a difficult problem but flexible enough to try different framings when one was not yielding results.</p>
+
+            <h3>The Failure Modes</h3>
+
+            <p>The ways in which Codex and Gemini failed are as instructive as Claude's success.</p>
+
+            <p>Codex's failure is what I would call "confident extrapolation from insufficient evidence." It found a pattern that fit small values, assumed that pattern would extend to large values, and continued refining its implementation even as the pattern failed validation checks. This is a particularly dangerous failure mode because the system appears to be making progress right up until it becomes clear that the entire approach was wrong. A human expert would typically recognize this pattern: if your formula works for N equals 10 but fails for N equals 20, the problem is probably not a bug in your implementation but a flaw in your model.</p>
+
+            <p>Gemini's failure is different: "research dependency without synthesis." Gemini searched extensively for external resources that would solve the problem or point toward a solution. When those resources did not exist (because Project Euler solutions are kept private), Gemini had fewer internal strategies to fall back on. The search-first approach works well when solutions exist in searchable form but becomes a liability when original thinking is required.</p>
+
+            <p>Both failure modes are recognizable human patterns. Some people get stuck in a rut, refining the wrong approach because they have invested effort in it. Others become overly dependent on looking up answers rather than developing their own understanding. The fact that AI systems exhibit these same patterns suggests that they may arise from general properties of problem-solving rather than being specific to human cognition.</p>
+
+            <h3>What the Session Logs Reveal</h3>
+
+            <p>Having access to detailed session logs allows us to see not just the final outcomes but the internal process. Several observations emerge from a close reading.</p>
+
+            <p>First, all three systems showed genuine engagement with the problem. They were not simply generating random code or looking for keyword matches. The reasoning in the logs is substantive, involving mathematical concepts correctly applied (even if not always successfully).</p>
+
+            <p>Second, the systems have different "thinking styles" that are apparent in the logs. Claude's reasoning is more free-flowing and exploratory. Codex's reasoning is more operational and implementation-focused. Gemini's reasoning is more structured and explicitly organized. These styles seem to reflect design choices by the respective teams.</p>
+
+            <p>Third, there are moments in each session that, in retrospect, could have been turning points. Codex's early observation about tree embeddings could have led somewhere productive. Gemini's observation about the growth rate could have been the seed of an insight. But neither system followed these threads to their conclusions.</p>
+
+            <h3>Broader Implications for AI Reasoning</h3>
+
+            <p>Let me be careful about overclaiming. One experiment with one problem is not sufficient evidence for sweeping conclusions about AI capabilities. But this experiment does illustrate several important points that resonate with broader observations about current AI systems.</p>
+
+            <p>First, current AI systems can perform genuine mathematical reasoning, at least some of the time. Claude did not just look up the answer or pattern-match to a solution it had seen in training. The session logs show a reasoning process: understanding the problem, forming hypotheses, testing them against evidence, and eventually arriving at insight. Whether this constitutes "real understanding" in a philosophical sense is a question I will leave to the philosophers. Pragmatically, it produced the correct answer to a problem that has stymied most human attempts.</p>
+
+            <p>Second, capability is remarkably uneven. The same problem that Claude solved was completely intractable for two other frontier models. This suggests that whatever abilities enable mathematical insight are not uniformly distributed across systems. It also suggests that current benchmarks may not adequately measure the capabilities that matter most for hard intellectual tasks.</p>
+
+            <p>Third, the difference between "solving easy versions" and "solving the hard version" is enormous. All three systems could solve D(10). None except Claude could solve D(10000). The gap between these is not just computational but conceptual. Current AI evaluation often focuses on tasks where the difficulty scales smoothly, but many real-world problems have sharp thresholds where incremental improvement stops working and qualitative insight becomes necessary.</p>
+
+            <h2>Part Five: Context and Implications</h2>
+
+            <h3>How This Fits Into AI Benchmarks</h3>
+
+            <p>The AI research community has developed many benchmarks for measuring coding ability: HumanEval for function completion, SWE-Bench for bug fixing, Codeforces for competitive programming, and many others. These benchmarks serve important purposes, but they may systematically miss capabilities that matter for hard problems.</p>
+
+            <p>Most coding benchmarks test whether a system can implement a known algorithm correctly or fix a bug in existing code. These are important practical capabilities, but they do not test whether a system can discover new mathematical structure. Project Euler problems, particularly the hardest ones, require exactly this kind of discovery. They are not solvable by implementing known techniques well; they require finding a new technique or a new perspective.</p>
+
+            <p>The results of this experiment suggest that performance on standard coding benchmarks may not predict performance on insight-requiring tasks. Claude, Codex, and Gemini all score well on standard benchmarks. Their scores on those benchmarks would not have predicted a three-way divergence on Project Euler 763, with one system succeeding completely and two failing completely.</p>
+
+            <p>This is not to say that current benchmarks are useless, only that they are incomplete. As AI systems are increasingly used for tasks that require creativity and insight, not just competent execution, we will need evaluation methods that measure these capabilities. Hard mathematical problems like Project Euler 763 may provide one such evaluation domain.</p>
+
+            <h3>Implications for AI Assistance</h3>
+
+            <p>If you are a developer or researcher using AI coding assistants, what should you take from this experiment?</p>
+
+            <p>First and most obviously, do not assume that all frontier models are interchangeable. They have different strengths, weaknesses, and failure modes. For routine code generation, the differences might be small. For problems requiring insight, the differences can be decisive.</p>
+
+            <p>Second, understand the failure modes. When an AI coding assistant is confident but wrong, it can lead you down a long dead-end path. Codex spent nearly 40 minutes on an approach that was never going to work. A human collaborating with Codex might have followed it into that dead end, trusting the system's apparent progress. Maintaining independent judgment about whether an approach is sound is essential when working with AI tools.</p>
+
+            <p>Third, verification matters enormously. An AI that can solve problems but cannot reliably verify its solutions is dangerous to trust for anything important. Look for systems that show their work and provide means of checking their answers. Claude's practice of verifying against known values before declaring success is a model worth emulating.</p>
+
+            <p>Fourth, know when AI assistance is likely to help and when it might hurt. For well-understood problems with standard solutions, AI tools are often excellent. For novel problems requiring genuine insight, the results are much less predictable. This experiment showed one system succeeding and two failing on a problem that requires mathematical discovery. That is not a failure rate you would want to bet on for high-stakes applications.</p>
+
+            <h3>The Question of Cheating</h3>
+
+            <p>Some readers might wonder whether Claude "cheated" by searching the web for the answer. The question deserves a thoughtful response.</p>
+
+            <p>First, the problem statement imposes no constraints on methodology. This is how real-world problems work. If you are trying to solve a business challenge and a Google search reveals that someone else has already solved it, using that solution is not cheating. It is efficient. The ability to find and apply existing knowledge is itself a valuable capability.</p>
+
+            <p>Second, Claude did not actually find the answer online. Project Euler solutions are kept private precisely to prevent this. What Claude found were references to related problems (the 2D pebbling problem) and mathematical structures (OEIS sequences) that informed its thinking. This is how human experts work too: they draw on knowledge of related problems to approach new ones. The insight still had to be developed; it was not simply copied.</p>
+
+            <p>Third, the other systems also had access to web search and either did not use it effectively (Codex did not use it at all) or found the same limited information Claude did (Gemini). The difference was not in what information was available but in how it was integrated into problem-solving.</p>
+
+            <p>If anything, this experiment suggests that the ability to effectively use external resources is itself a form of intelligence that matters. Knowing what to search for, how to evaluate results, and how to integrate findings with one's own reasoning are sophisticated cognitive skills that some AI systems have developed better than others.</p>
+
+            <h3>Looking Forward</h3>
+
+            <p>What does this experiment tell us about the future of AI reasoning?</p>
+
+            <p>On one hand, it is impressive that any AI system can solve research-level mathematics problems. Five years ago, this would have seemed like science fiction. The gap between "useful coding assistant" and "mathematical researcher" is closing, at least for some systems and some problems.</p>
+
+            <p>On the other hand, the inconsistency is concerning. If three frontier models give three different answers to the same well-posed mathematical question, and only one is right, then we do not yet have reliable AI mathematics. For AI systems to be trustworthy partners in scientific research, we need higher hit rates than 33 percent.</p>
+
+            <p>I expect this inconsistency to gradually resolve as techniques improve. The fact that Claude can do it proves it is possible. The question is whether that capability can be made robust and transferable across models and problem types. The gap between the best-performing system and the others suggests there is significant room for improvement.</p>
+
+            <p>More speculatively, experiments like this one may become a standard part of AI evaluation. Current benchmarks focus on tasks that are easy to automate: bug fixes, code completion, straightforward algorithm implementation. Benchmarks that require genuine insight, like hard Project Euler problems or unsolved mathematical conjectures, could provide a different and perhaps more important signal about AI capabilities. We may need new evaluation paradigms to understand what current systems can and cannot do.</p>
+
+            <h2>Conclusion: The 203rd Solver</h2>
+
+            <p>When I submitted Claude's answer to Project Euler, the site congratulated me on being the 203rd person to solve problem 763. In truth, I did not solve it. Claude did. But there is no checkbox for "AI-assisted solution," no way to register that the 203rd solver was not a person but a machine.</p>
+
+            <p>This ambiguity captures something essential about our current moment. AI systems are becoming capable enough to contribute substantively to intellectual work, but our social and professional frameworks have not caught up. When an AI helps you write code, who owns the code? When an AI solves a mathematical problem, who gets the credit? When an AI gives wrong advice, who bears the responsibility? These questions will only become more pressing as AI capabilities advance.</p>
+
+            <p>The experiment described in this essay is a small glimpse of a future where AI systems are genuine intellectual partners, with all the complications that entails. We will need to develop new practices around verification, attribution, and trust. We will need to understand when AI assistance is likely to help and when it might mislead. We will need evaluation methods that go beyond simple benchmarks to capture the kinds of insight that matter for hard problems.</p>
+
+            <p>For now, I will note that on January 21, 2026, three of the world's most sophisticated AI systems attempted a hard mathematical problem. One of them, through a combination of structural insight, careful reasoning, and effective use of external resources, found the answer. That is both remarkable and, in its own way, reassuring. Intelligence, artificial or otherwise, can still surprise us.</p>
+
+            <img src="assets/images/euler-claude-congrats.png" alt="Project Euler congratulations page showing correct solution">
+            <p class="image-caption">The 203rd solver of Project Euler 763 was an AI. The mathematics community will need to grapple with what this means.</p>
+
+            <div class="summary-box">
+                <h3>Summary</h3>
+                <p><strong>The Problem:</strong> Project Euler 763, "Amoebas in a 3D Grid," asks for D(10000) mod 10^9, where D(N) counts distinct amoeba arrangements after N divisions.</p>
+                <p><strong>The Contestants:</strong> Claude Code (Opus 4.5), Codex CLI (GPT-5.2), Gemini CLI (3-Pro Preview)</p>
+                <p><strong>The Answer:</strong> 798,443,574</p>
+                <p><strong>The Winner:</strong> Claude, in 25 minutes and 2 seconds</p>
+                <p><strong>The Lesson:</strong> Genuine mathematical insight remains unevenly distributed across AI systems. Capability exists but is not yet reliable or predictable. The gap between "solving easy versions" and "solving hard versions" of problems is qualitative, not just quantitative.</p>
+            </div>
+
+        </article>
+
+        <footer>
+            <p><strong>About the Author</strong></p>
+            <p>Brian Edwards is a software engineer based in Waco, Texas. He can be reached at <a href="mailto:brian.mabry.edwards@gmail.com">brian.mabry.edwards@gmail.com</a> or by phone at 512-584-6841.</p>
+            <div class="contact-info">
+                <p>Brian Edwards<br>
+                Waco, Texas, USA<br>
+                512-584-6841<br>
+                brian.mabry.edwards@gmail.com</p>
+            </div>
+            <p style="margin-top: 2rem; font-size: 0.85rem;">Published January 21, 2026</p>
+        </footer>
+    </main>
+</body>
+</html>
